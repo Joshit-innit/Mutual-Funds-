@@ -1,13 +1,11 @@
-# Mutual Funds Insight Platform (Frontend Prototype)
+# Mutual Funds Insight Platform
 
-A role-based **Mutual Fund Investment Perception** web prototype built for full-stack project submission (current scope: frontend + UI/UX only).
+A role-based **Mutual Fund Investment Perception** full-stack application built with React, Spring Boot, MySQL, and Firebase authentication.
 
 This platform helps users understand mutual funds, compare them, assess risk, and simulate investment decisions with interactive dashboards inspired by Groww/Zerodha-style UX.
 
 ## Project Scope (Current)
-- Frontend-only prototype
-- No backend/API/database integration yet
-- All operations are UI-simulated using mock data
+- Full-stack application with frontend and backend
 - Role-based flows for:
   - Investor
   - Admin
@@ -100,9 +98,32 @@ npm install
 npm run dev
 ```
 
+Backend:
+```bash
+cd backend
+./gradlew bootRun
+```
+
+## Deploy
+
+### Frontend on Netlify
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Add frontend environment variables from `/Users/chandutammana/Desktop/Mutual_Funds_app/.env.example`
+
+### Backend on Render
+- Use `Docker`
+- Dockerfile path: `backend/Dockerfile`
+- Add backend environment variables from `/Users/chandutammana/Desktop/Mutual_Funds_app/backend/.env.example`
+- `render.yaml` is included at `/Users/chandutammana/Desktop/Mutual_Funds_app/render.yaml`
+
+### Suggested architecture
+- Frontend: Netlify
+- Backend: Render
+- Database: Cloud MySQL
+- Authentication: Firebase Google Sign-In + email/password
+
 ## Current Limitations
-- No real authentication backend
-- No real transaction execution
-- No real-time NAV APIs
-- No database persistence (state resets on refresh)
+- Some analytics and investment insights are still rule-based rather than market-grade advisory models
+- Live data coverage is partial and centered on NAV/market snapshots rather than full institutional feeds
 - PDF/report generation is UI-simulated
