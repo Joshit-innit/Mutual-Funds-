@@ -78,7 +78,7 @@ public class AdvisorService {
                 post.getTitle(),
                 post.getPostType(),
                 post.getSummary(),
-                post.getLikesCount(),
+                post.getLikesCount() == null ? 0 : post.getLikesCount(),
                 csvMapper.splitStrings(post.getCommentsCsv())
         );
     }

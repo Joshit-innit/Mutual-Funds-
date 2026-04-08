@@ -32,4 +32,13 @@ public class ApiExceptionHandler {
                 "error", message
         );
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, Object> handleUnexpected(Exception exception) {
+        return Map.of(
+                "timestamp", LocalDateTime.now().toString(),
+                "error", exception.getMessage() == null ? "Unexpected server error" : exception.getMessage()
+        );
+    }
 }

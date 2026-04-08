@@ -8,6 +8,7 @@ import com.mutualfunds.backend.dto.FundDtos.LiveSyncResponse;
 import com.mutualfunds.backend.dto.FundDtos.FundUpsertRequest;
 import com.mutualfunds.backend.repository.MutualFundRepository;
 import com.mutualfunds.backend.repository.NavHistoryRepository;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -129,6 +130,11 @@ public class FundService {
         double recommendationScore = calculateRecommendationScore(fund);
         String recommendationLabel = recommendationLabel(recommendationScore, fund);
         String recommendationReason = buildRecommendationReason(fund, recommendationScore);
+        Map<String, Double> riskMetrics = new LinkedHashMap<>();
+        riskMetrics.put("stdDev", defaultDouble(fund.getStandardDeviation()));
+        riskMetrics.put("beta", defaultDouble(fund.getBeta()));
+        riskMetrics.put("sharpe", defaultDouble(fund.getSharpeRatio()));
+        riskMetrics.put("alpha", defaultDouble(fund.getAlpha()));
 
         return new FundResponse(
                 fund.getId(),
@@ -162,12 +168,7 @@ public class FundService {
                 csvMapper.splitStrings(fund.getCompaniesCsv()),
                 csvMapper.jsonishToMap(fund.getSectorAllocationJson()),
                 csvMapper.splitDoubles(fund.getGrowthPointsCsv()),
-                Map.of(
-                        "stdDev", fund.getStandardDeviation(),
-                        "beta", fund.getBeta(),
-                        "sharpe", fund.getSharpeRatio(),
-                        "alpha", fund.getAlpha()
-                ),
+                riskMetrics,
                 csvMapper.splitStrings(fund.getReviewsCsv())
         );
     }
@@ -210,10 +211,10 @@ public class FundService {
         if ("Debt".equalsIgnoreCase(fund.getFundType()) || "Hybrid".equalsIgnoreCase(fund.getFundType())) {
             return "Useful for investors who want a smoother ride with lower volatility than pure equity funds.";
         }
-        if (fund.getExpenseRatio() > 1.0) {
+        if (defaultDouble(fund.getExpenseRatio()) > 1.0) {
             return "Returns are decent, but cost is relatively high. Compare before investing.";
         }
-        if (fund.getRiskLevel().toLowerCase().contains("high")) {
+        if (fund.getRiskLevel() != null && fund.getRiskLevel().toLowerCase().contains("high")) {
             return "Higher upside potential, but expect sharper swings. Best for long-term investors with higher risk capacity.";
         }
         return "Balanced return profile with reasonable cost. A practical shortlist candidate for most investors.";
@@ -237,5 +238,9 @@ public class FundService {
                 .limit(limit)
                 .map(this::toFundResponse)
                 .toList();
+    }
+
+    private double defaultDouble(Double value) {
+        return value == null ? 0.0 : value;
     }
 }
